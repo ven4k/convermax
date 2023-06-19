@@ -1,0 +1,29 @@
+.checkboxBlock {
+    width: 30%;
+    border: 2px solid grey;
+    border-radius: 10px;
+    padding: 10px;
+
+    .checkboxItem {
+        padding: 0 0 0 8px;
+        width: 130px;
+        margin: 6px 0 0 0;
+
+        label {
+            margin:0;
+            display: inline-block;
+            width: 100px;
+        }
+    }
+
+    .checkboxItem:hover {
+        outline: 1px solid black;
+    }
+
+    label:hover,
+    input:hover {
+        cursor: pointer;
+    }
+}
+
+

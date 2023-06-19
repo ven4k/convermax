@@ -1,0 +1,28 @@
+select {
+    margin: 6px 0 0 0;
+    width: 220px;
+    height: 30px;
+    padding: 0 4px 0 0;
+}
+.selectBlock {
+    padding: 10px 10px 10px 20px;
+    width: 70%;
+    margin: 0 0 0 20px;
+    border: 2px solid grey;
+    border-radius: 10px;
+    label {
+        font-size: .9rem;
+        display: inline-block;
+        width: 200px;
+    }
+    input{
+        position: relative;
+        width: 220px;
+        height: 30px;
+        padding: 0 0 0 6px;
+    }
+    input[type=datetime-local]{
+        margin: 8px 0 0 0;
+    }
+
+}
