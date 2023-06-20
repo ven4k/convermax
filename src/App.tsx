@@ -9,7 +9,7 @@ import './App.scss';
 export const App: FC = () => {
   const [customInputValue, setCustomInputValue] = useState<string>('* * * * *')
   const [isRightRegExp, setIsRightRegExp] = useState(true);
-
+  const [indexLoaded, setIndexLoaded] = useState<number>(0)
   const dispatch = useAppDispatch();
   const state = useAppSelector(state => state.schedule);
 
@@ -31,31 +31,42 @@ export const App: FC = () => {
     return Number(e.currentTarget.value) > 59 ? dispatch(changeInputMinuteValue(59)) : dispatch(changeInputMinuteValue(Number(e.currentTarget.value)))
   }
 
+  const cronRegExp = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
+
   const handleClickSave = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setIndexLoaded(0);
+    setIsRightRegExp(true)
+    if (state.radioChecked === typeOfDate.Custom) {
+      dispatch(changeCronString(customInputValue))
+    }
+    if (state.radioChecked === typeOfDate.Once) {
+      dispatch(changeCronString(state.dateCron))
+    }
+
     //ДЕНЬ
     switch (state.radioChecked) {
       //День
       case typeOfDate.Daily: {
         //Каждый день в * часов и * минут
         if (state.inputHourValue >= 0 && state.inputMinutesValue >= 0) {
-          dispatch(changeCronString(`${String(state.inputMinutesValue)} */${String(state.inputHourValue)} * * *`))
-          return console.log(`${state.inputMinutesValue} */${state.inputHourValue} * * *`)
+          dispatch(changeCronString(`${state.inputMinutesValue} */${state.inputHourValue} * * *`));
+          return setCustomInputValue(`${state.inputMinutesValue} */${state.inputHourValue} * * *`);
         }
         //Каждый день, каждые * часов
         if (state.inputHourValue >= 0 && state.inputMinutesValue < 0) {
-          dispatch(changeCronString(`* */${String(state.inputHourValue)} * * *`))
-          return console.log(`* */${state.inputHourValue} * * *`)
+          dispatch(changeCronString(`* */${state.inputHourValue} * * *`))
+          return setCustomInputValue(`* */${state.inputHourValue} * * *`);
         }
         //Каждый день, каждые * минут
         if (state.inputHourValue < 0 && state.inputMinutesValue >= 0) {
-          dispatch(changeCronString(`*/${String(state.inputMinutesValue)} * * * *`))
-          return console.log(`*/${state.inputMinutesValue} * * * *`)
+          dispatch(changeCronString(`*/${state.inputMinutesValue} * * * *`))
+          return setCustomInputValue(`*/${state.inputMinutesValue} * * * *`);
         }
         //Каждый день, каждую минуту
         if (state.inputHourValue < 0 && state.inputMinutesValue < 0) {
           dispatch(changeCronString(`* * * * *`))
-          return console.log(`* * * * *`)
+          return setCustomInputValue(`* * * * *`)
         }
         break
       }
@@ -63,23 +74,26 @@ export const App: FC = () => {
       case typeOfDate.Weekly: {
         //Каждый * день недели в * часов и в * минут
         if (state.inputHourValue >= 0 && state.inputMinutesValue >= 0) {
-          dispatch(changeCronString(`${String(state.inputMinutesValue)} ${String(state.inputHourValue)} * * */${String(state.currentDay)}`))
-          return console.log(`${state.inputMinutesValue} ${state.inputHourValue} * * */${state.currentDay}`)
+          dispatch(changeCronString(`${state.inputMinutesValue} ${state.inputHourValue} * * */${state.currentDay}`))
+          return setCustomInputValue(`${state.inputMinutesValue} ${state.inputHourValue} * * */${state.currentDay}`)
         }
         //Каждый * день недели, каждые * часов
         if (state.inputHourValue >= 0 && state.inputMinutesValue < 0) {
-          dispatch(changeCronString(`* */${String(state.inputHourValue)} * * */${String(state.currentDay)}`))
-          return console.log(`* */${state.inputHourValue} * * */${state.currentDay}`)
+          dispatch(changeCronString(`* */${state.inputHourValue} * * */${state.currentDay}`));
+          return setCustomInputValue(`* */${state.inputHourValue} * * */${state.currentDay}`)
+
         }
         //Каждый * день недели, каждые * минут
         if (state.inputHourValue < 0 && state.inputMinutesValue >= 0) {
-          dispatch(changeCronString(`*/${String(state.inputMinutesValue)} * * * */${String(state.currentDay)}`));
-          return console.log(`*/${state.inputMinutesValue} * * * */${state.currentDay}`)
+          dispatch(changeCronString(`*/${state.inputMinutesValue} * * * */${state.currentDay}`));
+          return setCustomInputValue(`*/${state.inputMinutesValue} * * * */${state.currentDay}`)
+
         }
         //Каждую минуту в * день недели
         if (state.inputHourValue < 0 && state.inputMinutesValue < 0) {
-          dispatch(changeCronString(`* * * * */${String(state.currentDay)}`));
-          return console.log(`* * * * */${state.currentDay}`)
+          dispatch(changeCronString(`* * * * */${state.currentDay}`));
+          return setCustomInputValue(`* * * * */${state.currentDay}`)
+
         }
         break
       }
@@ -87,23 +101,26 @@ export const App: FC = () => {
       case typeOfDate.Monthly: {
         //Каждый * день месяца в * часов и * минут
         if (state.inputHourValue >= 0 && state.inputMinutesValue >= 0) {
-          dispatch(changeCronString(`${String(state.inputMinutesValue)} ${String(state.inputHourValue)} */${String(state.inputMonthValue)} * *`))
-          return console.log(`${state.inputMinutesValue} ${state.inputHourValue} */${state.inputMonthValue} * *`);
+          dispatch(changeCronString(`${state.inputMinutesValue} ${state.inputHourValue} */${state.inputMonthValue} * *`));
+          return setCustomInputValue(`${state.inputMinutesValue} ${state.inputHourValue} */${state.inputMonthValue} * *`)
+
         }
         //Каждый * день месяца, каждые * часов
         if (state.inputHourValue > 0 && state.inputMinutesValue < 0) {
-          dispatch(changeCronString(`* */${String(state.inputHourValue)} */${String(state.inputMonthValue)} * *`))
-          return console.log(`* */${state.inputHourValue} */${state.inputMonthValue} * *`);
+          dispatch(changeCronString(`* */${state.inputHourValue} */${state.inputMonthValue} * *`))
+          return setCustomInputValue(`* */${state.inputHourValue} */${state.inputMonthValue} * *`)
+
         }
         //Каждый * день недели, каждые * минут
         if (state.inputHourValue < 0 && state.inputMinutesValue >= 0) {
-          dispatch(changeCronString(`*/${String(state.inputMinutesValue)} * */${String(state.inputMonthValue)} * *`))
-          return console.log(`*/${state.inputMinutesValue} * */${state.inputMonthValue} * *`);
+          dispatch(changeCronString(`*/${state.inputMinutesValue} * */${state.inputMonthValue} * *`))
+          return setCustomInputValue(`*/${state.inputMinutesValue} * */${state.inputMonthValue} * *`)
+
         }
         //Каждую минуту в * день месяца
         if (state.inputHourValue < 0 && state.inputMinutesValue < 0) {
-          dispatch(changeCronString(`* * */${String(state.inputMonthValue)} * *`))
-          return console.log(`* * */${state.inputMonthValue} * *`);
+          dispatch(changeCronString(`* * */${state.inputMonthValue} * *`));
+          return setCustomInputValue(`* * */${state.inputMonthValue} * *`);
         }
         break
       }
@@ -111,20 +128,17 @@ export const App: FC = () => {
         return console.log(state.cronString)
       }
     }
+    console.log('312')
 
   }
 
   const handleLoadClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (isRightRegExp) {
-      console.log(customInputValue)
-      return dispatch(changeCronString(customInputValue))
-    }
+    setIndexLoaded(1)
   }
   const handleCustomInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const cronRegExp = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
     cronRegExp.test(e.target.value) ? setIsRightRegExp(true) : setIsRightRegExp(false);
-    setCustomInputValue(e.target.value)
+    setCustomInputValue(e.target.value);
   }
   return (
     <div className='app'>
@@ -133,16 +147,24 @@ export const App: FC = () => {
           <CheckboxBlock />
           <SelectBlock handleInputChange={handleInputChange} handleInputMinutesChange={handleInputMinutesChange} />
         </div>
-        <span className='description'>*-1 in inputs = empty field</span>
+        <span className='description'>* -1 in inputs = empty field</span>
+        <span className='description'>* To change the cron input, select the custom radio button</span>
+        {indexLoaded === 1 && (
+          <span className='prevSchedule'>Loaded previous schedule</span>
+        )}
         <div className='btnsBlock'>
-          <button disabled={state.radioChecked !== typeOfDate.Custom} onClick={handleLoadClick}>Load</button>
-          <button onClick={handleClickSave}>Save</button>
+          <button onClick={handleLoadClick} disabled={state.cronString.length<2}>Load</button>
+          <button onClick={handleClickSave} 
+          disabled={(state.radioChecked === typeOfDate.Custom && !isRightRegExp) 
+          || (state.radioChecked === typeOfDate.Weekly && !state.currentDay) 
+          || state.radioChecked === typeOfDate.Once && !state.dateCron }>Save</button>
         </div>
-        <input type='text' value={customInputValue} id='cronText'
-          disabled={state.radioChecked !== typeOfDate.Custom} onChange={handleCustomInputChange} />
-        {!isRightRegExp && (
+        <input type='text' disabled={state.radioChecked !== typeOfDate.Custom} value={(state.radioChecked === typeOfDate.Custom)
+          ? customInputValue : state.cronString[indexLoaded]} id='cronText'
+          onChange={handleCustomInputChange} />
+        {!isRightRegExp  && (
           <span className='wrongCron'>Wrong cron expression!</span>
-        )} 
+        )}
       </form>
     </div>
   )

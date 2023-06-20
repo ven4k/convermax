@@ -2,7 +2,7 @@ import { ChangeEvent, FC } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { typeOfDate } from "../../enums";
 import {
-    changeCurrentDay, changeDaysCurrentMonth, changeInputHourValue,
+    changeCurrentDay, changeDateCron, changeDateValue, changeDaysCurrentMonth, changeInputHourValue,
     changeInputMinuteValue, changeInputMonthValue, changeRadioChecked
 } from "../../store/scheduleSlice";
 import './CheckboxBlock.scss';
@@ -11,7 +11,7 @@ export const CheckboxBlock: FC = () => {
     const dispatch = useAppDispatch();
     const state = useAppSelector(state => state.schedule);
 
-    //Изменение типа повтора, каждый день или каждый день недели ...
+    //Изменение типа повтора
     const handleRadioChange = (e: ChangeEvent<HTMLInputElement>) => {
         dispatch(changeRadioChecked(e.target.value));
         if (state.radioChecked !== e.target.value) {
@@ -19,6 +19,8 @@ export const CheckboxBlock: FC = () => {
             dispatch(changeInputHourValue(0))
             dispatch(changeInputMinuteValue(1))
             dispatch(changeCurrentDay(''))
+            dispatch(changeDateCron(''));
+            dispatch(changeDateValue(''));
         }
         currMonth();
     }

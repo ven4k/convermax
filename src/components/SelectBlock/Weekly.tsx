@@ -13,7 +13,7 @@ export const Weekly: FC<ISelectBlock> = ({ handleInputMinutesChange, handleInput
             {state.radioChecked === typeOfDate.Weekly && (
                 <>
                     <select onChange={(e) => dispatch(changeCurrentDay(e.target.value))}>
-                        <option>Select day</option>
+                        <option value=''>Select day</option>
                         <option value='1'>{dayOfWeek.Monday}</option>
                         <option value='2'>{dayOfWeek.Tuesday}</option>
                         <option value='3'>{dayOfWeek.Wednesday}</option>

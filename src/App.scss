@@ -15,8 +15,12 @@
             height: 180px;
         }
         .description{
-            font-size: 0.7rem;
+            font-size: 0.86rem;
             color: grey;
+        }
+        .prevSchedule{
+            font-size: .9rem;
+            position: absolute;
         }       
         .btnsBlock {
             margin: 3rem 0 0 0;
@@ -45,6 +49,7 @@
             font-size: 1.6rem;
         }
         span{
+            display: block;
             color: red;
         }
 
